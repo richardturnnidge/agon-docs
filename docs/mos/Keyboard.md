@@ -169,3 +169,13 @@ Keys located on an extended keyboard number pad area are indicated with (pad).
 
 NOTE: There are a few gaps, so there may be more keys as not every keyboard has been tested.
 
+## Method  4 - command line input
+
+There may be times when you want a user to enter some text, or even just a number. The MOS API provides a useful method if allowing the user to type in as tsring of text without the programmer having to deal with every key press.
+
+
+
+
+
+
+
