@@ -17,6 +17,20 @@ rst.lil $08       ; make a MOS call with command $00 (mos_getkey).
                   ; A now contains the ascii code of the pressed key
 ```
 
+In C, the following example can be used:
+
+
+```
+ld a, $00         ; put $00 into A
+rst.lil $08       ; make a MOS call with command $00 (mos_getkey).
+                  ; system will wait until a key is pressed, then...
+                  ; A now contains the ascii code of the pressed key
+```
+
+
+
+
+
 ## Method 2 - sysvar_keyascii
 
 The MOS API command `mos_sysvars` returns a pointer to the base of the MOS SysVars (system state variables/information) area in IXU as a 24-bit pointer. 
@@ -34,6 +48,19 @@ rst.lil $08       ; make a MOS call with command $08 (mos_sysvars).
 ld a, (ix + $05)  ; A is loaded with the byte at offset +$05 from the base address
                   ; A now contains the ascii code of the pressed key, or 0 if no key
 ```
+
+
+In AgonDev C, the following example can be used:
+
+```
+#include "agon/vdp.h"
+
+...
+
+uint_8 theKey = vdp_getKeyCode();      // put ascii code, or 0, into  theKey
+
+```
+
 
 ## Method  3 - mos_getkbmap
 
@@ -55,6 +82,22 @@ bit 2, A              ; The Z flag register now determines whether the SPACE key
 jp nz, _SPACE_PRESSED_  ; do something as a result of key status
 ```
 
+
+In AgonDev C, the following example can be used:
+
+```
+#include "agon/vdp.h"
+#define GETBIT(var, bit)	(( var & (1 << (bit) ) ) ? 1 : 0 )
+
+...
+
+uint8_t keyRead = vdp_getKeyMap($0C);   // read the key map from offset +$0C
+if (GETBIT(keyRead, 2)) {               // SPACE key
+  // do some code here
+}
+
+
+    
 The following chart lists which key is defined for each _bit_ within each _byte_ offset from $00 to $0F:
 
 | IX+\Bit |   7    |   6    |     5     |     4     |    3     |    2     |     1     |     0     |
@@ -80,4 +123,3 @@ The following chart lists which key is defined for each _bit_ within each _byte_
 
 NOTE: There may be more, as not every keyboard has been tested.
 
-You can now read the keyboard
