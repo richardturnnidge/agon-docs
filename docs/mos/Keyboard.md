@@ -35,29 +35,50 @@ ld a, (IX + $05)  ; A is loaded with the byte at offset +$05 from the base addre
                   ; A now contains the ascii code of the pressed key, or 0 if no key
 ```
 
-## Method  3 - keyboard matrix
+## Method  3 - mos_getkbmap
 
-A chart will give lookups like this:
+The MOS API command `mos_getkbmap` returns a pointer to the base address of the MOS _virtual keybaord map_ in IXU as a 24-bit pointer. The keyboard map is an array of 16 bytes, where each bit within those bytes contains the current status of each key on the keyboard: 1 = pressed, o = not pressed.
+
+The byte at offset $05 after IXU provides an ascii code of the current key being pressed (or most recent if several are pressed), or 0 if no key is pressed.
+
+This method is useful to check for a multiple key presses. E.g., in a game menu where multiple directions, or movement plus a fire button need to be detected at the same time.
+
+In assembler, an example code might be:
+
+```
+ld a, $1E         ; put $1E into A
+rst.lil $08       ; make a MOS call with command $1E (mos_getkbmap).
+                  ; IXU is now loaded with the base address of the keyboard map
+ld a, (IX + $0C)  ; A is loaded with the byte at offset +$0C from the base address
+                  ; A now contains the status of 8 differnt keys
+bit 2, A          ; The Z flag register now determines whether the SPACE key (bit 2) is pressed
 
 
-| IX\Bit |   7    |   6    |     5     |     4     |    3     |    2     |     1     |     0     |
+```
+
+
+
+This chart lists which key is defined for each bit within each byte offset from $00 to $0F:
+
+
+| IX+\Bit |   7    |   6    |     5     |     4     |    3     |    2     |     1     |     0     |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| 00     | CTRL R | SHIFT R| ALT L     | CTRL L    | SHIFT L  |          |           | ALT R     |
-| 01     |        |        |           |           |          |          |           |           |
-| 02     | -      | F7     | 8         | F4        | 5        | 4        | 3         | q         |
-| 03     | Scroll | F10    | F12       | F11       | 7 (pad)  | 6 (pad)  |           | ⇐         |
-| 04     | 0      | 9      | I         | 7         | T        | E        | W         | PRT SCR   |
-| 05     | BK SPC | ` ~    |           | 9 (pad)   | 8 (pad)  |          |           | ⇓         |
-| 06     | P      | O      | U         | 6         | R        | D        | 2         | 1         |
-| 07     | PageUp | Home   | Insert    | Enter(pad)| - (pad)  | + (pad)  | ⇧         | [         |
-| 08     | ‘(@)   | K      | J         | Y         | F        | X        | A         | CAPS LK   |
-| 09     | PageDn | NUM LK | ./del(pad)| / (pad)   |          |          |           | ENTER     |
-| 0A     | ;      | L      | N         | H         | G        | C        | S         |           |
-| 0B     |        | - (+)  |           | *(pad)    |          |          |           | DELETE    |
-| 0C     | . >    | , <    | M         | B         | V        | SPACE    | Z         | TAB       |
-| 0D     |        |        | 3(pad)    | 1(pad)    | 0(pad)   | End      | / ?       |           |
-| 0E     | F9     | F8     | F6        | F5        | F3       | F2       | F1        | ESC       |
-| 0F     | WIN R  | WIN L  | 2(pad)    | 5(pad)    | 4(pad)   |          |           | ⇨         |
+| $00     | CTRL R | SHIFT R| ALT L     | CTRL L    | SHIFT L  |          |           | ALT R     |
+| $01     |        |        |           |           |          |          |           |           |
+| $02     | -      | F7     | 8         | F4        | 5        | 4        | 3         | q         |
+| $03     | Scroll | F10    | F12       | F11       | 7 (pad)  | 6 (pad)  |           | ⇐         |
+| $04     | 0      | 9      | I         | 7         | T        | E        | W         | PRT SCR   |
+| $05     | BK SPC | ` ~    |           | 9 (pad)   | 8 (pad)  |          |           | ⇓         |
+| $06     | P      | O      | U         | 6         | R        | D        | 2         | 1         |
+| $07     | PageUp | Home   | Insert    | Enter(pad)| - (pad)  | + (pad)  | ⇧         | [         |
+| $08     | ‘(@)   | K      | J         | Y         | F        | X        | A         | CAPS LK   |
+| $09     | PageDn | NUM LK | ./del(pad)| / (pad)   |          |          |           | ENTER     |
+| $0A     | ;      | L      | N         | H         | G        | C        | S         |           |
+| $0B     |        | - (+)  |           | *(pad)    |          |          |           | DELETE    |
+| $0C     | . >    | , <    | M         | B         | V        | SPACE    | Z         | TAB       |
+| $0D     |        |        | 3(pad)    | 1(pad)    | 0(pad)   | End      | / ?       |           |
+| $0E     | F9     | F8     | F6        | F5        | F3       | F2       | F1        | ESC       |
+| $0F     | WIN R  | WIN L  | 2(pad)    | 5(pad)    | 4(pad)   |          |           | ⇨         |
 
 (pad) indicates the key is on an extended keyboard number pad area.
 
