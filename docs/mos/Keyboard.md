@@ -1,6 +1,6 @@
 # Keyboard Input
 
-This section explains different methods of reading the keyboard from within your code.
+There are several different methods of reading the keyboard from within your code, each with advantages and disadvantages, so the method selected will depend on your specific need at that point in your code. You don't have to stick with one method, you can choose the best for a particular task.
 
 ## Method 1 - mos_getkey
 
@@ -38,7 +38,6 @@ ld a, (ix + $05)  ; A is loaded with the byte at offset +$05 from the base addre
                   ; A now contains the ascii code of the pressed key, or 0 if no key
 ```
 
-
 In AgonDev C, the following example can be used:
 
 ```
@@ -49,6 +48,33 @@ In AgonDev C, the following example can be used:
 uint_8 theKey = vdp_getKeyCode();      // put ascii code, or 0, into  theKey
 
 ```
+
+
+It is also possible to check the status of the modifier keys (SHIFT, CTRL, etc).
+
+The byte at offset $06 after IXU provides a bit code of the modifier keys which are pressed.
+
+```
+ld a, $08         ; put $08 into A
+rst.lil $08       ; make a MOS call with command $08 (mos_sysvars).
+                  ; IXU is now loaded with the base address
+ld a, (ix + $06)  ; A is loaded with the byte at offset +$06 from the base address
+                  ; A now contains a bit patter of any modifier keys pressed
+```
+
+The following bits represent the given modifier keys:
+
+
+| Bit |  Hex |Modifier |
+| :---: | :---: | :---: |
+| 0     | $01 | CTRL |
+| 1     | $02 | SHIFT |
+| 2     | $04 | ALT L |
+| 3     | $08 | ALT R |
+| 4     | $10 | CAPS |
+| 5     | $20 | |
+| 6     | $40 | |
+| 7     | $80 | WINDOWS |
 
 
 ## Method  3 - mos_getkbmap
