@@ -45,7 +45,7 @@ In AgonDev C, the following example can be used:
 
 ...
 
-uint_8 theKey = vdp_getKeyCode();      // put ascii code, or 0, into  theKey
+uint8_t theKey = vdp_getKeyCode();      // put ascii code, or 0, into  theKey
 
 ```
 
@@ -62,6 +62,7 @@ ld a, (ix + $06)  ; A is loaded with the byte at offset +$06 from the base addre
                   ; A now contains a bit pattern of any modifier keys pressed
 ```
 
+
 The following bits represent the given modifier keys:
 
 
@@ -77,15 +78,40 @@ The following bits represent the given modifier keys:
 | 7     | $80 | WINDOWS |
 
 
+
+
+You can also do a simple test to see if any keys are pressed.
+
+The byte at offset $18 (sysvar_vkeydown) after IXU provides an indication if there are _any_ keys pressed.
+
+```
+ld a, $08         ; put $08 into A
+rst.lil $08       ; make a MOS call with command $08 (mos_sysvars).
+                  ; IXU is now loaded with the base address
+ld a, (ix + $18)  ; A is loaded with the byte at offset +$18 from the base address
+                  ; A now contains 1 if any key is pressed, or 0 if none are pressed
+```
+
+In AgonDev C there are also two useful functions to aid the programmer, which are pretty obvious what they do. One will wait until _any_ key is pressed down, the other will wait until there are no keys pressed (all keys up):
+
+```
+vdp_waitKeyDown();           
+vdp_waitKeyUp();
+```
+
+
+
 ## Method  3 - mos_getkbmap
 
-The MOS API command `mos_getkbmap` returns a pointer to the base address of the MOS _virtual keybaord map_ in IXU as a 24-bit pointer. 
+This is probably the most complex method, but also the most comprehensive and flexible. 
+
+The MOS API command `mos_getkbmap` returns a pointer to the base address of the MOS _virtual keyboard map_ in IXU as a 24-bit pointer. 
 
 The keyboard map is an array of 16 bytes, where each bit within those bytes contains the current status of each key on the keyboard, bit = 1 for pressed, bit = o for not pressed.
 
 To find out if any key (including modifer keys) is pressed, read the correct byte with the offset after IXU and then check the specific bit for its status.
 
-This method is useful to check for a multiple key presses. E.g., In a game menu where multiple directions are possible (up and right), or movement plus a fire button need to be detected at the same time. 
+This method is useful to check for a multiple key presses. E.g., In a game where multiple directions are possible (up and right), or movement plus a fire button need to be detected at the same time. 
 
 This can also be used to check for less common combinations that would not return a standard ascii character, such as pressing the LEFT ALT and SPACE at the same time to perform a special function.
 
