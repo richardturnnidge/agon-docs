@@ -1,6 +1,6 @@
 # Keyboard Input
 
-This section will explain methods of reading the keyboard
+This section explains different methods of reading the keyboard from within your code.
 
 ## Method 1 - mos_getkey
 
@@ -8,7 +8,7 @@ This call will wait until a key has been pressed, and return the ascii key code 
 
 This method should be used with caution. Calling this method will wait indefinitely until a key is pressed, with no other means of escape, apart from a system reset.
 
-In assembler, an example code might be:
+In assembler, an example might be:
 
 ```
 ld a, $00         ; put $00 into A
@@ -25,13 +25,13 @@ The byte at offset $05 after IXU provides an ascii code of the current key being
 
 This is useful to check for a single key press. E.g., in a game menu where there may be multiple options, but only a single decision is needed to move on.
 
-In assembler, an example code might be:
+In assembler, an example might be:
 
 ```
 ld a, $08         ; put $08 into A
 rst.lil $08       ; make a MOS call with command $08 (mos_sysvars).
                   ; IXU is now loaded with the base address
-ld a, (IX + $05)  ; A is loaded with the byte at offset +$05 from the base address
+ld a, (ix + $05)  ; A is loaded with the byte at offset +$05 from the base address
                   ; A now contains the ascii code of the pressed key, or 0 if no key
 ```
 
@@ -43,23 +43,19 @@ The byte at offset $05 after IXU provides an ascii code of the current key being
 
 This method is useful to check for a multiple key presses. E.g., in a game menu where multiple directions, or movement plus a fire button need to be detected at the same time.
 
-In assembler, an example code might be:
+In assembler, an example might be:
 
 ```
-ld a, $1E         ; put $1E into A
-rst.lil $08       ; make a MOS call with command $1E (mos_getkbmap).
-                  ; IXU is now loaded with the base address of the keyboard map
-ld a, (IX + $0C)  ; A is loaded with the byte at offset +$0C from the base address
-                  ; A now contains the status of 8 differnt keys
-bit 2, A          ; The Z flag register now determines whether the SPACE key (bit 2) is pressed
-
-
+ld a, $1E             ; put $1E into A
+rst.lil $08           ; make a MOS call with command $1E (mos_getkbmap).
+                      ; IXU is now loaded with the base address of the keyboard map
+ld a, (ix + $0C)      ; A is loaded with the byte at offset +$0C from the base address
+                      ; A now contains the status of 8 differnt keys
+bit 2, A              ; The Z flag register now determines whether the SPACE key (bit 2) is pressed
+jp nz, _SPACE_PRESSED_  ; do something as a result of key status
 ```
 
-
-
-This chart lists which key is defined for each bit within each byte offset from $00 to $0F:
-
+The following chart lists which key is defined for each _bit_ within each _byte_ offset from $00 to $0F:
 
 | IX+\Bit |   7    |   6    |     5     |     4     |    3     |    2     |     1     |     0     |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
