@@ -88,10 +88,11 @@ uint8_t keyRead = vdp_getKeyMap($0C);   // read the key map from offset +$0C
 if (GETBIT(keyRead, 2)) {               // SPACE key
   // do some code here
 }
-
+```
 
     
 The following chart lists which key is defined for each _bit_ within each _byte_ offset from $00 to $0F:
+
 
 | IX+\Bit |   7    |   6    |     5     |     4     |    3     |    2     |     1     |     0     |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -112,7 +113,7 @@ The following chart lists which key is defined for each _bit_ within each _byte_
 | $0E     | F9     | F8     | F6        | F5        | F3       | F2       | F1        | ESC       |
 | $0F     | WIN R  | WIN L  | 2(pad)    | 5(pad)    | 4(pad)   |          |           | ⇨         |
 
-(pad) indicates the key is on an extended keyboard number pad area.
+Keys located on an extended keyboard number pad area are indicated with (pad).
 
-NOTE: There may be more, as not every keyboard has been tested.
+NOTE: There are a few gaps, so there may be more keys as not every keyboard has been tested.
 
