@@ -2,11 +2,40 @@
 
 This section will explain methods of reading the keyboard
 
-## Method 1
+## Method 1 - mos_getkey
 
-This is a link [found here](../MOS.md#the-stack).
+This call will wait until a key has been pressed, and return the ascii key code of the key which was pressed.
 
-## Method 2
+This method should be used with caution. Calling this method will wait indefinitely until a key is pressed, with no other means of escape, apart from a system reset.
+
+In assembler, an example code might be:
+
+```
+ld a, $00         ; put $00 into A
+rst.lil $08       ; make a MOS call with command $00 (mos_getkey).
+                  ; system will wait until a key is pressed, then...
+                  ; A now contains the ascii code of the pressed key
+```
+
+## Method 2 - sysvar_keyascii
+
+The MOS API command `mos_sysvars` returns a pointer to the base of the MOS SysVars (system state variables/information) area in IXU as a 24-bit pointer. 
+
+The byte at offset $05 after IXU provides an ascii code of the current key being pressed (or most recent if several are pressed), or 0 if no key is pressed.
+
+This is useful to check for a single key press. E.g., in a game menu where there may be multiple options, but only a single decision is needed to move on.
+
+In assembler, an example code might be:
+
+```
+ld a, $08         ; put $08 into A
+rst.lil $08       ; make a MOS call with command $08 (mos_sysvars).
+                  ; IXU is now loaded with the base address
+ld a, (IX + $05)  ; A is loaded with the byte at offset +$05 from the base address
+                  ; A now contains the ascii code of the pressed key, or 0 if no key
+```
+
+## Method  3 - keyboard matrix
 
 A chart will give lookups like this:
 
