@@ -17,18 +17,7 @@ rst.lil $08       ; make a MOS call with command $00 (mos_getkey).
                   ; A now contains the ascii code of the pressed key
 ```
 
-In C, the following example can be used:
-
-
-```
-ld a, $00         ; put $00 into A
-rst.lil $08       ; make a MOS call with command $00 (mos_getkey).
-                  ; system will wait until a key is pressed, then...
-                  ; A now contains the ascii code of the pressed key
-```
-
-
-
+The call has not been implemented in AgonDev C, as the same result could be achieved with the next method.
 
 
 ## Method 2 - sysvar_keyascii
@@ -64,11 +53,15 @@ uint_8 theKey = vdp_getKeyCode();      // put ascii code, or 0, into  theKey
 
 ## Method  3 - mos_getkbmap
 
-The MOS API command `mos_getkbmap` returns a pointer to the base address of the MOS _virtual keybaord map_ in IXU as a 24-bit pointer. The keyboard map is an array of 16 bytes, where each bit within those bytes contains the current status of each key on the keyboard: 1 = pressed, o = not pressed.
+The MOS API command `mos_getkbmap` returns a pointer to the base address of the MOS _virtual keybaord map_ in IXU as a 24-bit pointer. 
 
-The byte at offset $05 after IXU provides an ascii code of the current key being pressed (or most recent if several are pressed), or 0 if no key is pressed.
+The keyboard map is an array of 16 bytes, where each bit within those bytes contains the current status of each key on the keyboard, bit = 1 for pressed, bit = o for not pressed.
 
-This method is useful to check for a multiple key presses. E.g., in a game menu where multiple directions, or movement plus a fire button need to be detected at the same time.
+To find out if any key (including modifer keys) is pressed, read the correct byte with the offset after IXU and then check the specific bit for its status.
+
+This method is useful to check for a multiple key presses. E.g., In a game menu where multiple directions are possible (up and right), or movement plus a fire button need to be detected at the same time. 
+
+This can also be used to check for less common combinations that would not return a standard ascii character, such as pressing the LEFT ALT and SPACE at the same time to perform a special function.
 
 In assembler, an example might be:
 
@@ -79,7 +72,7 @@ rst.lil $08           ; make a MOS call with command $1E (mos_getkbmap).
 ld a, (ix + $0C)      ; A is loaded with the byte at offset +$0C from the base address
                       ; A now contains the status of 8 differnt keys
 bit 2, A              ; The Z flag register now determines whether the SPACE key (bit 2) is pressed
-jp nz, _SPACE_PRESSED_  ; do something as a result of key status
+jp nz, SPACE_PRESSED  ; do something as a result of key status
 ```
 
 
