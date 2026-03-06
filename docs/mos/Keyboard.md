@@ -59,7 +59,7 @@ ld a, $08         ; put $08 into A
 rst.lil $08       ; make a MOS call with command $08 (mos_sysvars).
                   ; IXU is now loaded with the base address
 ld a, (ix + $06)  ; A is loaded with the byte at offset +$06 from the base address
-                  ; A now contains a bit patter of any modifier keys pressed
+                  ; A now contains a bit pattern of any modifier keys pressed
 ```
 
 The following bits represent the given modifier keys:
