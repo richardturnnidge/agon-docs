@@ -10,17 +10,9 @@ This is a link [found here](../MOS.md#the-stack).
 
 A chart will give lookups like this:
 
-| Note | Size | Contents |
-|--------|------|----------|
-| Bit   | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |
-| 0x43   | 1 byte | F |
-| 0x44   | 1 byte | J |
 
-
-| Note | Size | Contents |
-|     Bit|   7    |   6    |     5     |     4     |    3     |    2     |     1     |     0     |
-|Index   |        |        |           |           |          |          |           |           |        
-|--------|--------|--------|--------|--------|--------|--------|--------|--------|--------|--------|
+| IX\Bit |   7    |   6    |     5     |     4     |    3     |    2     |     1     |     0     |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 00     | CTRL R | SHIFT R| ALT L     | CTRL L    | SHIFT L  |          |           | ALT R     |
 | 01     |        |        |           |           |          |          |           |           |
 | 02     | -      | F7     | 8         | F4        | 5        | 4        | 3         | q         |
@@ -37,6 +29,9 @@ A chart will give lookups like this:
 | 0D     |        |        | 3(pad)    | 1(pad)    | 0(pad)   | End      | / ?       |           |
 | 0E     | F9     | F8     | F6        | F5        | F3       | F2       | F1        | ESC       |
 | 0F     | WIN R  | WIN L  | 2(pad)    | 5(pad)    | 4(pad)   |          |           | ⇨         |
-|--------|--------|--------|--------|--------|--------|--------|--------|--------|--------|--------|
+
+(pad) indicates the key is on an extended keyboard number pad area.
+
+NOTE: There may be more, as not every keyboard has been tested.
 
 You can now read the keyboard
