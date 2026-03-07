@@ -17,12 +17,16 @@ rst.lil $08       ; make a MOS call with command $00 (mos_getkey).
                   ; A now contains the ascii code of the pressed key
 ```
 
-The call has not been implemented in AgonDev C, as the same result could be achieved with the next method.
+The call has not been implemented in AgonDev C, as the same result could be achieved with the next method, using a loop if result is 0.
 
 
-## Method 2 - sysvar_keyascii
+## Method 2 - Single Key Checks
 
 The MOS API command `mos_sysvars` returns a pointer to the base of the MOS SysVars (system state variables/information) area in IXU as a 24-bit pointer. 
+
+There are three useful keyboard bytes store in this area - `sysvar_keyascii`, `sysvar_keymods` and `sysvar_vkeydown`.
+
+### sysvar_keyascii
 
 The byte at offset $05 after IXU provides an ascii code of the current key being pressed (or most recent if several are pressed), or 0 if no key is pressed.
 
@@ -45,10 +49,10 @@ In AgonDev C, the following example can be used:
 
 ...
 
-uint8_t theKey = vdp_getKeyCode();      // put ascii code, or 0, into  theKey
-
+uint8_t theKey = vdp_getKeyCode();      // put ascii code, or 0, into theKey
 ```
 
+### sysvar_keymods
 
 It is also possible to check the status of the modifier keys (SHIFT, CTRL, etc).
 
@@ -62,9 +66,7 @@ ld a, (ix + $06)  ; A is loaded with the byte at offset +$06 from the base addre
                   ; A now contains a bit pattern of any modifier keys pressed
 ```
 
-
 The following bits represent the given modifier keys:
-
 
 | Bit |  Hex |Modifier |
 | :---: | :---: | :---: |
@@ -77,12 +79,11 @@ The following bits represent the given modifier keys:
 | 6     | $40 | |
 | 7     | $80 | WINDOWS |
 
+### sysvar_vkeydown
 
+You can also do a simple test to see if any of the _keys_ are pressed.
 
-
-You can also do a simple test to see if any keys are pressed.
-
-The byte at offset $18 (sysvar_vkeydown) after IXU provides an indication if there are _any_ keys pressed.
+The byte at offset $18 (sysvar_vkeydown) after IXU provides an indication if there are any keys pressed.
 
 ```
 ld a, $08         ; put $08 into A
@@ -92,14 +93,14 @@ ld a, (ix + $18)  ; A is loaded with the byte at offset +$18 from the base addre
                   ; A now contains 1 if any key is pressed, or 0 if none are pressed
 ```
 
-In AgonDev C there are also two useful functions to aid the programmer, which are pretty obvious what they do. One will wait until _any_ key is pressed down, the other will wait until there are no keys pressed (all keys up):
+In AgonDev C there are also two useful functions to aid the programmer which utilise this MOS call, which are pretty obvious what they do. One will wait until _any_ key is pressed down, the other will wait until there are no keys pressed (all keys up):
 
 ```
 vdp_waitKeyDown();           
 vdp_waitKeyUp();
 ```
 
-
+These are useful for that _press any key to continue_ scenario.
 
 ## Method  3 - mos_getkbmap
 
@@ -126,7 +127,6 @@ ld a, (ix + $0C)      ; A is loaded with the byte at offset +$0C from the base a
 bit 2, A              ; The Z flag register now determines whether the SPACE key (bit 2) is pressed
 jp nz, SPACE_PRESSED  ; do something as a result of key status
 ```
-
 
 In AgonDev C, the following example can be used:
 
@@ -169,11 +169,33 @@ Keys located on an extended keyboard number pad area are indicated with (pad).
 
 NOTE: There are a few gaps, so there may be more keys as not every keyboard has been tested.
 
-## Method  4 - command line input
 
-There may be times when you want a user to enter some text, or even just a number. The MOS API provides a useful method if allowing the user to type in as tsring of text without the programmer having to deal with every key press.
+## Method  4 - mos_editline
+
+There may be times when you want a user to enter some text, or even just a number. The MOS API provides a useful method of allowing the user to type in as string of text without the programmer having to deal with every key press.
+The programmer needs to define a buffer of bytes where the typed in string will be stored and then invoke the `mos_editline` command. Note that the buffer needs to allow an extra byte for a $00 terminator. So, a 32 byte buffer will be 31 string characters, plus the $00 terminator.
+
+When the call has been completed, the A register will contain the character used to exit.
+If user pressed ENTER, then it will be 13. 
+If user pressed ESC, then it will be 27. This can used used as a check for _cancel_.
+
+In assembler, an example might be:
+
+```
+ld a, $09         ; put $09 into A
+ld hl, myBuffer   ; HL is where the string data will be stored once entered
+ld bc, 32         ; BC is the max length of string to be captured
+ld e, 1           ; E contains flags. 1 = buffer will be cleared before use
+rst.lil $08       ; make a MOS call with command $09 (mos_editline).
+                  ; the data will now be sored at address starting _myBuffer_
+                  ; The A regster will contain the charater used to exit, ESC or ENTER
+
+myBuffer:
+    .ds 32        ; define 32 bytes of space for the buffer
+```
 
 
+In AgonDev C, the function `uint8_t exitCode = mos_editline(buffer, length, flags);` can be used.
 
 
 
