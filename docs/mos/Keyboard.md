@@ -149,7 +149,7 @@ The following chart lists which key is defined for each _bit_ within each _byte_
 | IX+\Bit |   7    |   6    |     5     |     4     |    3     |    2     |     1     |     0     |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | $00     | CTRL R | SHIFT R| ALT L     | CTRL L    | SHIFT L  |          |           |           |
-| $01     |        |        |           |           |          |          |           | ALT R     |
+| $01     |        |        |           |           | M adjust | M menu   | M select  | ALT R     |
 | $02     | -      | F7     | 8         | F4        | 5        | 4        | 3         | q         |
 | $03     | Scr Lk | F10    | F12       | F11       | 7 (pad)  | 6 (pad)  | LEFT      | ^         |
 | $04     | 0      | 9      | I         | 7         | T        | E        | W         | PRT SCR   |
@@ -167,9 +167,11 @@ The following chart lists which key is defined for each _bit_ within each _byte_
 
 Keys located on an extended keyboard number pad area are indicated with (pad).
 
-NOTE: There are a few gaps, so there may be more keys as not every keyboard has been tested.
+NOTES:
 
 (break) is included as per original BBC Micro keyboard, but will not be found on most modern keyboards.
+
+M adjust, M menu and M select are planned for mouse buttons.
 
 
 ## Method  4 - [`mos_editline`](./API.md#0x09-mos_editline) 
