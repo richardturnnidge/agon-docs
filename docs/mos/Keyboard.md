@@ -153,7 +153,7 @@ The following chart lists which key is defined for each _bit_ within each _byte_
 | $02     | -      | F7     | 8         | F4        | 5        | 4        | 3         | q         |
 | $03     | Scr Lk | F10    | F12       | F11       | 7 (pad)  | 6 (pad)  | LEFT      | ^         |
 | $04     | 0      | 9      | I         | 7         | T        | E        | W         | PRT SCR   |
-| $05     | BK SPC | ` ~    |           |           | 9 (pad)  | 8 (pad)  | DOWN      |           |
+| $05     | BK SPC |        | ` ~       | (break)   | 9 (pad)  | 8 (pad)  | DOWN      |           |
 | $06     | P      | O      | U         | 6         | R        | D        | 2         | 1         |
 | $07     | PageUp | Home   | Insert    | Enter(pad)| - (pad)  | + (pad)  | UP        | [         |
 | $08     | ‘(@)   | K      | J         | Y         | F        | X        | A         | CAPS LK   |
@@ -168,6 +168,8 @@ The following chart lists which key is defined for each _bit_ within each _byte_
 Keys located on an extended keyboard number pad area are indicated with (pad).
 
 NOTE: There are a few gaps, so there may be more keys as not every keyboard has been tested.
+
+(break) is included as per original BBC Micro keyboard, but will not be found on most modern keyboards.
 
 
 ## Method  4 - [`mos_editline`](./API.md#0x09-mos_editline) 
